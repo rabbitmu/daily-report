@@ -1,0 +1,25 @@
+{
+  "name": "daily_report",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "babel-node server.js",
+    "compile": "babel-node index.js"
+  },
+  "keywords": [
+    "daily",
+    "report",
+    "txt"
+  ],
+  "author": "muming",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "^7.11.4",
+    "@babel/node": "^7.10.5",
+    "@babel/preset-env": "^7.11.0",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "jquery": "^3.5.1"
+  }
+}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>app</title>
+    <link rel="stylesheet" href="./script/layui/css/layui.css">
+    <style>
+        .wrapper {
+            padding: 20px;
+        }
+
+        .layui-input-block {
+            margin: 15px 0;
+        }
+
+        .layui-form::before {
+            content: attr(data-text);
+            display: block;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .button_wrapper {
+            text-align: center;
+        }
+    </style>
+    <script src="./script/jquery.min.js"></script>
+    <script src="./script/layui/layui.all.js"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="layui-form" lay-filter="project" data-text="项目名">
+            <div class="layui-input-block">
+                <input type="text" name="name" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form" lay-filter="today" data-text="今日工作">
+            <button class="layui-btn layui-btn-normal">新增</button>
+        </div>
+        <div class="layui-form" lay-filter="tomorrow" data-text="明日计划">
+            <button class="layui-btn layui-btn-normal">新增</button>
+        </div>
+        <div class="button_wrapper"><button data-event="generate" class="layui-btn layui-btn-normal">生成日志</button></div>
+    </div>
+
+    <script>
+        // 生成一行输入框
+        const createInput = ({ name = '', placeholder = '请输入内容' }) => {
+            return `<div class="layui-form-item"><div class="layui-input-block" style="margin-left: 0;"><input type="text" name="${name}" placeholder="${placeholder}" class="layui-input"></div></div>`
+        }
+
+        // 生成随机字符
+        const randomString = (length = 16) => {
+            const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            return Array.from({ length }).reduce(s => s + chars[Math.floor(Math.random() * chars.length)], '')
+        }
+
+        $(function() {
+            const $todayWrapper = $('[lay-filter=today]'), $tomorrowWrapper = $('[lay-filter=tomorrow]')
+
+            // 初始化时创建一项
+            $todayWrapper.append(createInput({ name: randomString() }))
+            $tomorrowWrapper.append(createInput({ name: randomString() }))
+
+            // 注册事件
+            $todayWrapper.find('button').on('click', () => $todayWrapper.append(createInput({ name: randomString() })))
+            $tomorrowWrapper.find('button').on('click', () => $tomorrowWrapper.append(createInput({ name: randomString() })))
+
+            // 提交事件
+            $('.button_wrapper').on('click', e => {
+                const event = $(e.target).attr('data-event')
+                switch(event) {
+                    case 'generate':
+                        const todayTask = Object.values(layui.form.val('today')),
+                            tomorrowTask = Object.values(layui.form.val('tomorrow')),
+                            projectName = layui.form.val('project').name
+
+                        $.ajax({
+                            url: '/api/generate',
+                            method: 'POST',
+                            data: JSON.stringify({
+                                projectName: projectName,
+                                todayTask,
+                                tomorrowTask
+                            }),
+                            contentType: 'application/json'
+                        }).done(res => {
+                            if(res.code === 0) {
+                                layui.layer.msg('编译成功')
+                            }
+                        })
+                        break
+                    default:
+                }
+            })
+        })
+    </script>
+</body>
+</html>
