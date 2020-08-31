@@ -93,6 +93,15 @@
                             }
                         })
                         break
+                    case 'upload':
+                        $.ajax({
+                            url: '/api/upload',
+                            method: 'POST'
+                        }).done(res => {
+                            if(res.code === 0) {
+                                layui.layer.msg('上传成功')
+                            }
+                        })
                     default:
                 }
             })
